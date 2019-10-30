@@ -36,14 +36,12 @@ def exact_fisher(crosstab, correction=False):
     '''
     numpy2ri.activate()
     stats = importr('stats')
-    
-    if correction:
+
+    try:
         return stats.fisher_test(crosstab, simulate_p_value=correction, B=5000)
-    else:
-        try:
-            return stats.fisher_test(crosstab, simulate_p_value=correction, B=5000)
-        except rpy2.rinterface.RRuntimeError:
-            return 'Fisher test cannot be performed!'
+    except rpy2.rinterface.RRuntimeError:
+        return stats.fisher_test(crosstab, simulate_p_value=True, B=5000)
+
 
 
 def choose_method(field1: str, field2: str):
