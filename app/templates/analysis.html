@@ -5,6 +5,22 @@
     <title>Исследование связей между {{field1}} и {{field2}}</title>
 </head>
 <body>
-    Здесь будет исследование связей между {{field1}} и {{field2}}
+    Таблица сопряжённости между {{field1}} и {{field2}}
+    <table>
+        <tr>
+            <th></th>
+            {% for i in contingency.columns  %}
+                <th><label>{{ i }}</label></th>
+            {% endfor %}
+        </tr>
+        {% for index, row in contingency.iterrows() %}
+            <tr>
+                <th><label>{{ index }}</label></th>
+                {% for i in row %}
+                    <th>{{ i }}</th>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
 </body>
 </html>
