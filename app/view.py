@@ -2,6 +2,7 @@ from app import app
 from flask import render_template
 from flask import request, escape
 from analytics import analyzer
+from app.database import database
 
 
 @app.route("/", methods=['GET'])
@@ -27,7 +28,7 @@ def post_insert_data():
     else:
         form_result = request.json
     print(form_result)
-    return render_template("insert.html", message='Success')
+    return render_template("insert.html", message=database.insert(form_result))
 
 
 @app.route("/insert", methods=['POST', 'GET'])
