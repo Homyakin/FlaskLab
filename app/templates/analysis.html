@@ -17,7 +17,7 @@
             <tr>
                 <th><label>{{ index }}</label></th>
                 {% for i in row %}
-                    <th>{{ "{:.4n}".format(i|float()) }}</th>
+                    <td>{{ "{:.4n}".format(i|float()) }}</td>
                 {% endfor %}
             </tr>
         {% endfor %}
@@ -38,7 +38,7 @@
                 <tr>
                     <th><label>{{ index }}</label></th>
                     {% for i in expected[loop.index - 1] %}
-                        <th>{{ "{:.4n}".format(i|float()) }}</th>
+                        <td>{{ "{:.4n}".format(i|float()) }}</td>
                     {% endfor %}
                 </tr>
             {% endfor %}
