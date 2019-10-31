@@ -41,16 +41,18 @@ def exact_fisher(crosstab, correction=False):
     '''
     :param crosstab: numpy.ndarray -- table of actual frequences
     :param correction: bool -- use Yates correction
-    :return: tuple -- (chi2 statistic, p-value,)
+    :return: tuple -- (chi2 statistic, None)
     '''
     numpy2ri.activate()
     stats = importr('stats')
 
     try:
-        return str(stats.fisher_test(crosstab,
-                                     simulate_p_value=correction, B=5000))
+        result = str(stats.fisher_test(crosstab,
+                                       simulate_p_value=correction, B=5000))
     except rpy2.rinterface.RRuntimeError:
-        return str(stats.fisher_test(crosstab, simulate_p_value=True, B=5000))
+        result = str(stats.fisher_test(crosstab, simulate_p_value=True, B=5000))
+
+    return result, None
 
 
 def choose_method(field1: str, field2: str):
@@ -67,6 +69,6 @@ def choose_method(field1: str, field2: str):
     elif np.any((crosstab >= 5) & (crosstab <= 9)):
         return pearsons_chi2(crosstab, True)
     elif np.sum(crosstab) > 500:
-        return (exact_fisher(crosstab, True), None)
+        return exact_fisher(crosstab, True)
     else:
-        return (exact_fisher(crosstab, True), None)
+        return exact_fisher(crosstab, False)
