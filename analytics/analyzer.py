@@ -29,9 +29,9 @@ def pearsons_chi2(crosstab, correction=False):
                                                      correction=correction)
 
     result = f'''
-    Used method: Pearson's chi2
-    Yates correction: {'Yes' if correction else 'No'}
-    Chi2 statistic = {chi2_stat:.4f}
+    Used method: Pearson's chi2;\n
+    Yates correction: {'Yes' if correction else 'No'};\n
+    Chi2 statistic = {chi2_stat:.4f};\n
     P-value = {pval:.4f}
     '''
     return result, expected

@@ -6,7 +6,7 @@
 </head>
 <body>
     Таблица сопряжённости между {{field1}} и {{field2}}
-    <table>
+    <table border="1">
         <tr>
             <th></th>
             {% for i in contingency.columns  %}
@@ -17,7 +17,7 @@
             <tr>
                 <th><label>{{ index }}</label></th>
                 {% for i in row %}
-                    <th>{{ i }}</th>
+                    <th>{{ "{:.4n}".format(i|float()) }}</th>
                 {% endfor %}
             </tr>
         {% endfor %}
@@ -27,7 +27,7 @@
         <label>Таблица ожидаемых значений для выбранного метода отсутствует</label>
     {% else %}
         Таблица ожидаемых значений
-        <table>
+        <table border="1">
             <tr>
                 <th></th>
                 {% for i in contingency.columns  %}
@@ -39,7 +39,7 @@
                 <tr>
                     <th><label>{{ index }}</label></th>
                     {% for i in expected[j] %}
-                        <th>{{ i }}</th>
+                        <th>{{ "{:.4n}".format(i|float()) }}</th>
                     {% endfor %}
                     {% set j = j + 1 %}
                 </tr>
