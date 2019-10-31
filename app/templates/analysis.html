@@ -17,7 +17,7 @@
             <tr>
                 <th><label>{{ index }}</label></th>
                 {% for i in row %}
-                    <th>{{ "{:.4n}".format(i|float()) }}</th>
+                    <td>{{ "{:.4n}".format(i|float()) }}</td>
                 {% endfor %}
             </tr>
         {% endfor %}
@@ -34,14 +34,12 @@
                     <th><label>{{ i }}</label></th>
                 {% endfor %}
             </tr>
-            {% set j = 0 %}
             {% for index, row in contingency.iterrows() %}
                 <tr>
                     <th><label>{{ index }}</label></th>
-                    {% for i in expected[j] %}
-                        <th>{{ "{:.4n}".format(i|float()) }}</th>
+                    {% for i in expected[loop.index - 1] %}
+                        <td>{{ "{:.4n}".format(i|float()) }}</td>
                     {% endfor %}
-                    {% set j = j + 1 %}
                 </tr>
             {% endfor %}
         </table>

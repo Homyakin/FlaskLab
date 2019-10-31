@@ -2,7 +2,7 @@ from app import app
 from flask import render_template
 from flask import request, escape
 from analytics import analyzer
-from app.database import database
+from database import database
 
 
 @app.route("/", methods=['GET'])
@@ -37,4 +37,3 @@ def insert_data():
         return render_template("insert.html")
     else:
         return post_insert_data()
-
