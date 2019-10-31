@@ -22,5 +22,29 @@
             </tr>
         {% endfor %}
     </table>
+    <h1>Значение статистики: {{ statistic }}</h1>
+    {% if expected is none%}
+        <label>Таблица ожидаемых значений для выбранного метода отсутствует</label>
+    {% else %}
+        Таблица ожидаемых значений
+        <table>
+            <tr>
+                <th></th>
+                {% for i in contingency.columns  %}
+                    <th><label>{{ i }}</label></th>
+                {% endfor %}
+            </tr>
+            {% set j = 0 %}
+            {% for index, row in contingency.iterrows() %}
+                <tr>
+                    <th><label>{{ index }}</label></th>
+                    {% for i in expected[j] %}
+                        <th>{{ i }}</th>
+                    {% endfor %}
+                    {% set j = j + 1 %}
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
 </body>
 </html>

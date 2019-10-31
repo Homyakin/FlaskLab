@@ -55,15 +55,15 @@ def exact_fisher(crosstab, correction=False):
     return result, None
 
 
-def choose_method(field1: str, field2: str):
+def get_statistic_and_expected_table(field1: str, field2: str, crosstab):
     '''
         super duper AI function for choosing tests
 
         :param field1:
         :param field2:
+        :param crosstab: pd.crosstab() for field1 and field2:
         :return: tuple (function result, table of expected values or None)
     '''
-    crosstab = get_contingency_table(field1, field2)
     if np.all(crosstab > 10):
         return pearsons_chi2(crosstab, False)
     elif np.any((crosstab >= 5) & (crosstab <= 9)):
