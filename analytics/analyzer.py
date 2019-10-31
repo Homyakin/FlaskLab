@@ -50,7 +50,7 @@ def choose_method(field1: str, field2: str):
 
         :param field1:
         :param field2:
-        :return: 
+        :return: function result
     '''
     crosstab = get_contingency_table(field1, field2)
     if np.all(crosstab > 10):
