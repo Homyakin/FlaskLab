@@ -57,5 +57,7 @@ def choose_method(field1: str, field2: str):
         return pearsons_chi2(crosstab, False)
     elif np.any((crosstab >= 5) & (crosstab <= 9)):
         return pearsons_chi2(crosstab, True)
-    # TODO 
-
+    elif np.sum(crosstab) > 500:
+        return exact_fisher(crosstab, True)
+    else:
+        return exact_fisher(crosstab, True)
