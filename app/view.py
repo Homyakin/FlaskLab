@@ -18,3 +18,22 @@ def analyze():
     return render_template("analysis.html", field1=field1, field2=field2, contingency=contingency_table,
                            statistic=statistic, expected=expected_table)
 
+
+def post_insert_data():
+    form_result = {}
+    if request.json is None:
+        form_result['field1'] = request.form.get('field1')
+        form_result['field2'] = request.form.get('field2')
+    else:
+        form_result = request.json
+    print(form_result)
+    return render_template("insert.html", message='Success')
+
+
+@app.route("/insert", methods=['POST', 'GET'])
+def insert_data():
+    if request.method == 'GET':
+        return render_template("insert.html")
+    else:
+        return post_insert_data()
+
