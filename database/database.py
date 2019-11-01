@@ -10,8 +10,7 @@ def create_connection():
     """
     conn = None
     try:
-        path_to_db = os.path.join(os.getcwd(), r'app\data\data.db')
-        conn = sqlite3.connect(path_to_db)
+        conn = sqlite3.connect('app/data/data.db')
     except Error as e:
         print(e)
 
