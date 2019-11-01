@@ -4,6 +4,18 @@ from flask import request, escape
 from analytics import analyzer
 from database import database
 
+values = {'EmploymentStatus': ['Employed for wages', 'Self-employed business owner',
+                               'Self-employed freelancer'],
+          'Gender': ['male', 'female'],
+          'JobWherePref': ['in an office with other developers', 'from home', 'no preference'],
+          'SchoolDegree': ['some college credit, no degree', "bachelor's degree", "associate's degree",
+                           'high school diploma or equivalent (GED)',
+                           "master's degree (non-professional)", 'Ph.D.',
+                           'trade, technical, or vocational training',
+                           'professional degree (MBA, MD, JD, etc.)', 'some high school',
+                           'no high school (secondary school)']
+          }
+
 
 @app.route("/", methods=['GET'])
 def main():
@@ -31,17 +43,17 @@ def post_insert_data():
         form_result['LanguageAtHome'] = request.form.get('LanguageAtHome')
         form_result['JobWherePref'] = request.form.get('JobWherePref')
         form_result['SchoolDegree'] = request.form.get('SchoolDegree')
-        form_result['Income'] = request.form.get('Income')
+        form_result['Income'] = int(request.form.get('Income'))
     else:
         form_result = request.json
     print(form_result)
     with database.create_connection() as conn:
-        return render_template("insert.html", message=database.insert(conn, form_result))
+        return render_template("insert.html", selected=values, message=database.insert(conn, form_result))
 
 
 @app.route("/insert", methods=['POST', 'GET'])
 def insert_data():
     if request.method == 'GET':
-        return render_template("insert.html")
+        return render_template("insert.html", selected=values)
     else:
         return post_insert_data()

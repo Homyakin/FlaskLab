@@ -48,7 +48,7 @@ def exact_fisher(crosstab, correction=False):
     try:
         result = str(stats.fisher_test(crosstab,
                                        simulate_p_value=correction, B=5000))
-    except rpy2.rinterface.RRuntimeError:
+    except rpy2.rinterface_lib.embedded.RRuntimeError:
         result = str(stats.fisher_test(crosstab, simulate_p_value=True, B=5000))
 
     return str(result), None
@@ -61,7 +61,6 @@ def get_statistic_and_expected_table(crosstab):
         :param crosstab: pd.crosstab() for field1 and field2:
         :return: tuple (function result, table of expected values or None)
     """
-
     crosstab = crosstab.values
     if np.sum(crosstab) > 10000:
         return exact_fisher(crosstab, True)

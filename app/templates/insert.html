@@ -6,12 +6,16 @@
 </head>
 <body>
     <form action="/insert" method="post">
+        {% for key, value in selected.items() %}
+            <select name='{{ key }}'>
+                <option selected disabled>{{ key }}</option>
+                {% for i in value %}
+                    <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+            </select><br>
+        {% endfor %}
         EmploymentField <input type="text" name="EmploymentField"><br>
-        EmploymentStatus <input type="text" name="EmploymentStatus"><br>
-        Gender <input type="text" name="Gender"><br>
         LanguageAtHome <input type="text" name="LanguageAtHome"><br>
-        JobWherePref <input type="text" name="JobWherePref"><br>
-        SchoolDegree <input type="text" name="SchoolDegree"><br>
         Income <input type="text" name="Income"><br>
         <input type="submit">
     </form>
