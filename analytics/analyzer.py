@@ -63,7 +63,7 @@ def get_statistic_and_expected_table(crosstab):
     """
 
     crosstab = crosstab.values
-    if np.sum(crosstab) > 500:
+    if np.sum(crosstab) > 10000:
         return exact_fisher(crosstab, True)
     else:
         if np.all(crosstab >= 10):
