@@ -22,7 +22,8 @@
             </tr>
         {% endfor %}
     </table>
-    <h1>Значение статистики: {{ statistic }}</h1>
+    <h1>Результат: 
+        {{ statistic }}</h1>
     {% if expected is none%}
         <label>Таблица ожидаемых значений для выбранного метода отсутствует</label>
     {% else %}

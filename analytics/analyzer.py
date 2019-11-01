@@ -3,8 +3,8 @@ import pandas as pd
 import rpy2
 import rpy2.robjects.numpy2ri as numpy2ri
 from rpy2.robjects.packages import importr
-from app import data
 from scipy.stats import chi2_contingency
+from database.database import *
 
 
 def get_contingency_table(field1: str, field2: str):
@@ -14,7 +14,7 @@ def get_contingency_table(field1: str, field2: str):
     :param field2:
     :return: таблица сопряженности
     """
-
+    data = pd.DataFrame(get(field1, field2), columns=[field1, field2])
     cross_table = pd.crosstab(data[field1], data[field2])
     return cross_table
 
@@ -52,18 +52,17 @@ def exact_fisher(crosstab, correction=False):
     except rpy2.rinterface.RRuntimeError:
         result = str(stats.fisher_test(crosstab, simulate_p_value=True, B=5000))
 
-    return result, None
+    return str(result), None
 
 
-def get_statistic_and_expected_table(field1: str, field2: str, crosstab):
+def get_statistic_and_expected_table(crosstab):
     """
         super duper AI function for choosing tests
 
-        :param field1:
-        :param field2:
         :param crosstab: pd.crosstab() for field1 and field2:
         :return: tuple (function result, table of expected values or None)
     """
+
     if np.sum(crosstab) > 500:
         return exact_fisher(crosstab, True)
     else:

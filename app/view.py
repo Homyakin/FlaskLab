@@ -23,8 +23,13 @@ def analyze():
 def post_insert_data():
     form_result = {}
     if request.json is None:
-        form_result['field1'] = request.form.get('field1')
-        form_result['field2'] = request.form.get('field2')
+        form_result['EmploymentField'] = request.form.get('EmploymentField')
+        form_result['EmploymentStatus'] = request.form.get('EmploymentStatus')
+        form_result['Gender'] = request.form.get('Gender')
+        form_result['LanguageAtHome'] = request.form.get('LanguageAtHome')
+        form_result['JobWherePref'] = request.form.get('JobWherePref')
+        form_result['SchoolDegree'] = request.form.get('SchoolDegree')
+        form_result['Income'] = request.form.get('Income')
     else:
         form_result = request.json
     print(form_result)
