@@ -14,10 +14,12 @@ def main():
 def analyze():
     field1 = escape(request.args.get('field1'))
     field2 = escape(request.args.get('field2'))
-    contingency_table = analyzer.get_contingency_table(field1, field2)
-    statistic, expected_table = analyzer.get_statistic_and_expected_table(contingency_table)
-    return render_template("analysis.html", field1=field1, field2=field2, contingency=contingency_table,
-                           statistic=statistic, expected=expected_table)
+    with database.create_connection() as conn:
+        data = database.get(conn, field1, field2)
+        contingency_table = analyzer.get_contingency_table(data, field1, field2)
+        statistic, expected_table = analyzer.get_statistic_and_expected_table(contingency_table)
+        return render_template("analysis.html", field1=field1, field2=field2, contingency=contingency_table,
+                               statistic=statistic, expected=expected_table)
 
 
 def post_insert_data():
@@ -33,8 +35,8 @@ def post_insert_data():
     else:
         form_result = request.json
     print(form_result)
-    db = database.Database()
-    return render_template("insert.html", message=db.insert(form_result))
+    with database.create_connection() as conn:
+        return render_template("insert.html", message=database.insert(conn, form_result))
 
 
 @app.route("/insert", methods=['POST', 'GET'])

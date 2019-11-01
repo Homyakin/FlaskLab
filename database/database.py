@@ -1,47 +1,56 @@
 import sqlite3
+import os
+from sqlite3 import Error
 
 
-class Database:
-    def __init__(self):
-        self.conn = sqlite3.connect('./app/data/data.db')
-        self.cur = self.conn.cursor()
+def create_connection():
+    """ create a database connection to the SQLite database
+        specified by db_file
+    :return: Connection object or None
+    """
+    conn = None
+    try:
+        conn = sqlite3.connect(os.getcwd() + '\\app\\data\\data.db')
+    except Error as e:
+        print(e)
 
-    def get(self, field1: str, field2: str):
-        """
+    return conn
 
-        :param field1: имя поля1
-        :param field2: имя поля2
-        :return: список из бд
-        """
 
-        self.cur.execute(f'''
-        SELECT {field1}, {field2} FROM INFO;
-        ''')
+def get(conn, field1: str, field2: str):
+    """
+    :param conn: connection to database
+    :param field1: имя поля 1
+    :param field2: имя поля
+    :return: list of tuples with data from db
+    """
+    cur = conn.cursor()
+    cur.execute(f'''
+    SELECT {field1}, {field2} FROM INFO;
+    ''')
 
-        return self.cur.fetchall()
+    return cur.fetchall()
 
-    def insert(self, data: dict):
-        """
 
-        :param data: словарь с данными
-        :return: сообщение об успехе с описание ошибки в случае отказа
-        """
+def insert(conn, data: dict):
+    """
+    :param conn: connection to database
+    :param data: словарь с данными
+    :return: last row id
+    """
 
-        sql = '''
-        BEGIN TRANSACTION;
-        INSERT INTO INFO(EmploymentField, 
-                         EmploymentStatus, 
-                         Gender, 
-                         LanguageAtHome, 
-                         JobWherePref, 
-                         SchoolDegree,
-                         Income) VALUES(?,?,?,?,?,?,?);
-                         
-        COMMIT;
-        '''
+    cur = conn.cursor()
 
-        self.cur.execute(sql)
+    sql = '''
+    INSERT INTO INFO(EmploymentField, 
+                     EmploymentStatus, 
+                     Gender, 
+                     LanguageAtHome, 
+                     JobWherePref, 
+                     SchoolDegree,
+                     Income) VALUES(?,?,?,?,?,?,?);
+                     
+    '''
 
-    def __del__(self):
-        self.cur.close()
-        self.conn.close()
+    cur.execute(sql, list(data.values()))
+    return cur.lastrowid

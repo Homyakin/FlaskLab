@@ -4,18 +4,16 @@ import rpy2
 import rpy2.robjects.numpy2ri as numpy2ri
 from rpy2.robjects.packages import importr
 from scipy.stats import chi2_contingency
-from database import database
 
 
-def get_contingency_table(field1: str, field2: str):
+def get_contingency_table(data, field1: str, field2: str):
     """
-
+    :param data: pandas dataframe
     :param field1:
     :param field2:
     :return: таблица сопряженности
     """
-    db = database.Database()
-    data = pd.DataFrame(db.get(field1, field2), columns=[field1, field2])
+    data = pd.DataFrame(data, columns=[field1, field2])
     cross_table = pd.crosstab(data[field1], data[field2])
     return cross_table
 
@@ -64,6 +62,7 @@ def get_statistic_and_expected_table(crosstab):
         :return: tuple (function result, table of expected values or None)
     """
 
+    crosstab = crosstab.values
     if np.sum(crosstab) > 500:
         return exact_fisher(crosstab, True)
     else:

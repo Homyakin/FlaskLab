@@ -1,6 +1,7 @@
 import pandas as pd
 import sqlite3
 
+
 data = pd.read_csv('../app/data/data.csv')
 data = data[['EmploymentField', 'EmploymentStatus',
              'Gender', 'LanguageAtHome',
