@@ -8,7 +8,8 @@ cur = conn.cursor()
 def get(field1: str, field2: str):
     """
 
-    :param column: имя поля
+    :param field1: имя поля 1
+    :param field2: имя поля
     :return: список из бд
     """
 
