@@ -1,48 +1,47 @@
 import sqlite3
 
 
-conn = sqlite3.connect('../app/data/data.db')
-cur = conn.cursor()
+class Database:
+    def __init__(self):
+        self.conn = sqlite3.connect('./app/data/data.db')
+        self.cur = self.conn.cursor()
 
+    def get(self, field1: str, field2: str):
+        """
 
-def get(field1: str, field2: str):
-    """
+        :param field1: имя поля1
+        :param field2: имя поля2
+        :return: список из бд
+        """
 
-    :param field1: имя поля 1
-    :param field2: имя поля
-    :return: список из бд
-    """
+        self.cur.execute(f'''
+        SELECT {field1}, {field2} FROM INFO;
+        ''')
 
-    cur.execute(f'''
-    SELECT {field1}, {field2} FROM INFO;
-    ''')
+        return self.cur.fetchall()
 
-    return cur.fetchall()
+    def insert(self, data: dict):
+        """
 
+        :param data: словарь с данными
+        :return: сообщение об успехе с описание ошибки в случае отказа
+        """
 
-def insert(data: dict):
-    """
+        sql = '''
+        BEGIN TRANSACTION;
+        INSERT INTO INFO(EmploymentField, 
+                         EmploymentStatus, 
+                         Gender, 
+                         LanguageAtHome, 
+                         JobWherePref, 
+                         SchoolDegree,
+                         Income) VALUES(?,?,?,?,?,?,?);
+                         
+        COMMIT;
+        '''
 
-    :param data: словарь с данными
-    :return: сообщение об успехе с описание ошибки в случае отказа
-    """
+        self.cur.execute(sql)
 
-    sql = '''
-    BEGIN TRANSACTION;
-    INSERT INTO INFO(EmploymentField, 
-                     EmploymentStatus, 
-                     Gender, 
-                     LanguageAtHome, 
-                     JobWherePref, 
-                     SchoolDegree,
-                     Income) VALUES(?,?,?,?,?,?,?);
-                     
-    COMMIT;
-    '''
-
-    cur.execute(sql)
-
-
-def close():
-    cur.close()
-    conn.close()
+    def __del__(self):
+        self.cur.close()
+        self.conn.close()

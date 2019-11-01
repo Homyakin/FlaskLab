@@ -4,7 +4,7 @@ import rpy2
 import rpy2.robjects.numpy2ri as numpy2ri
 from rpy2.robjects.packages import importr
 from scipy.stats import chi2_contingency
-from database.database import *
+from database import database
 
 
 def get_contingency_table(field1: str, field2: str):
@@ -14,7 +14,8 @@ def get_contingency_table(field1: str, field2: str):
     :param field2:
     :return: таблица сопряженности
     """
-    data = pd.DataFrame(get(field1, field2), columns=[field1, field2])
+    db = database.Database()
+    data = pd.DataFrame(db.get(field1, field2), columns=[field1, field2])
     cross_table = pd.crosstab(data[field1], data[field2])
     return cross_table
 
