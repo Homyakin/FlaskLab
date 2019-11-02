@@ -36,7 +36,7 @@ def pearsons_chi2(crosstab, correction=False):
     return result, expected
 
 
-def exact_fisher(crosstab, correction=False):
+def exact_fisher(crosstab, length, correction=False):
     """
     :param crosstab: numpy.ndarray -- table of actual frequencies
     :param correction: bool -- use Yates correction
@@ -47,9 +47,9 @@ def exact_fisher(crosstab, correction=False):
 
     try:
         result = str(stats.fisher_test(crosstab,
-                                       simulate_p_value=correction, B=5000))
+                                       simulate_p_value=correction, B=length * 10))
     except rpy2.rinterface_lib.embedded.RRuntimeError:
-        result = str(stats.fisher_test(crosstab, simulate_p_value=True, B=5000))
+        result = str(stats.fisher_test(crosstab, simulate_p_value=True, B=length * 10))
 
     return str(result), None
 
@@ -62,12 +62,13 @@ def get_statistic_and_expected_table(crosstab):
         :return: tuple (function result, table of expected values or None)
     """
     crosstab = crosstab.values
-    if np.sum(crosstab) > 10000:
-        return exact_fisher(crosstab, True)
+    length = np.sum(crosstab)
+    if length > 10000:
+        return exact_fisher(crosstab, length, True)
     else:
         if np.all(crosstab >= 10):
             return pearsons_chi2(crosstab, False)
         elif np.any((crosstab > 5) & (crosstab <= 9)):
             return pearsons_chi2(crosstab, True)
         else:
-            return exact_fisher(crosstab, False)
+            return exact_fisher(crosstab, length, False)
