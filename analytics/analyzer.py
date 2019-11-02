@@ -4,6 +4,12 @@ import rpy2
 import rpy2.robjects.numpy2ri as numpy2ri
 from rpy2.robjects.packages import importr
 from scipy.stats import chi2_contingency
+from scipy.stats.contingency import expected_freq
+
+
+def get_expected_values(crosstab):
+    expected = expected_freq(crosstab)
+    return expected
 
 
 def get_contingency_table(data, field1: str, field2: str):
@@ -51,7 +57,7 @@ def exact_fisher(crosstab, length, correction=False):
     except rpy2.rinterface_lib.embedded.RRuntimeError:
         result = str(stats.fisher_test(crosstab, simulate_p_value=True, B=length * 10))
 
-    return str(result), None
+    return str(result)
 
 
 def get_statistic_and_expected_table(crosstab):
@@ -61,14 +67,16 @@ def get_statistic_and_expected_table(crosstab):
         :param crosstab: pd.crosstab() for field1 and field2:
         :return: tuple (function result, table of expected values or None)
     """
+    expected_df = pd.DataFrame(get_expected_values(crosstab).T)
     crosstab = crosstab.values
-    length = np.sum(crosstab)
+    expected = expected_df.values
+    length = np.sum(expected)
     if length > 10000:
-        return exact_fisher(crosstab, length, True)
+        return exact_fisher(crosstab, length, True), expected_df
     else:
-        if np.all(crosstab >= 10):
+        if np.all(expected >= 10):
             return pearsons_chi2(crosstab, False)
-        elif np.any((crosstab > 5) & (crosstab <= 9)):
+        elif np.any((expected > 5) & (expected <= 9)):
             return pearsons_chi2(crosstab, True)
         else:
-            return exact_fisher(crosstab, length, False)
+            return exact_fisher(crosstab, length, False), expected_df
