@@ -1,5 +1,4 @@
 import sqlite3
-import os
 from sqlite3 import Error
 
 
@@ -17,16 +16,15 @@ def create_connection():
     return conn
 
 
-def get(conn, field1: str, field2: str):
+def get(conn, fields):
     """
     :param conn: connection to database
-    :param field1: имя поля 1
-    :param field2: имя поля
+    :param fields: list of fields to get
     :return: list of tuples with data from db
     """
     cur = conn.cursor()
     cur.execute(f'''
-    SELECT {field1}, {field2} FROM INFO;
+    SELECT {', '.join(fields)} FROM INFO;
     ''')
 
     return cur.fetchall()
@@ -42,14 +40,17 @@ def insert(conn, data: dict):
     cur = conn.cursor()
 
     sql = '''
-    INSERT INTO INFO(EmploymentField, 
-                     EmploymentStatus, 
-                     Gender, 
-                     LanguageAtHome, 
-                     JobWherePref, 
-                     SchoolDegree,
-                     Income) VALUES(?,?,?,?,?,?,?);
-                     
+    INSERT INTO INFO(CityPopulation,
+                    EmploymentField,
+                    EmploymentStatus,
+                    Gender,
+                    HasDebt,
+                    LanguageAtHome,
+                    JobPref,
+                    JobWherePref,
+                    SchoolDegree,
+                    MaritalStatus,
+                    Income) VALUES(?,?,?,?,?,?,?,?,?,?,?);
     '''
 
     cur.execute(sql, list(data.values()))

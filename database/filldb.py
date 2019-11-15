@@ -3,21 +3,27 @@ import sqlite3
 
 
 data = pd.read_csv('../app/data/data.csv')
-data = data[['EmploymentField', 'EmploymentStatus',
-             'Gender', 'LanguageAtHome',
-             'JobWherePref', 'SchoolDegree',
+data = data[['CityPopulation', 'EmploymentField',
+             'EmploymentStatus', 'Gender',
+             'HasDebt', 'LanguageAtHome',
+             'JobPref', 'JobWherePref',
+             'SchoolDegree', 'MaritalStatus',
              'Income']]
 data = data[data['Gender'].isin(['male', 'female'])]
 data.dropna(inplace=True)
 
 sql = '''
-INSERT INTO INFO(EmploymentField, 
-                 EmploymentStatus, 
-                 Gender, 
-                 LanguageAtHome, 
-                 JobWherePref, 
+INSERT INTO INFO(CityPopulation,
+                 EmploymentField,
+                 EmploymentStatus,
+                 Gender,
+                 HasDebt,
+                 LanguageAtHome,
+                 JobPref,
+                 JobWherePref,
                  SchoolDegree,
-                 Income) VALUES(?,?,?,?,?,?,?);
+                 MaritalStatus,
+                 Income) VALUES(?,?,?,?,?,?,?,?,?,?,?);
 '''
 
 
@@ -30,15 +36,19 @@ def create_database():
         BEGIN TRANSACTION;
             CREATE TABLE INFO (
                 ID integer primary key autoincrement,
+                CityPopulation TEXT,
                 EmploymentField TEXT,
                 EmploymentStatus TEXT,
                 Gender TEXT,
-                LanguageAtHome TEXT, 
+                HasDebt INTEGER,
+                LanguageAtHome TEXT,
+                JobPref TEXT,
                 JobWherePref TEXT,
-                SchoolDegree TEXT, 
+                SchoolDegree TEXT,
+                MaritalStatus TEXT,
                 Income REAL
             );
-            
+
         COMMIT;
         """)
         conn.commit()
