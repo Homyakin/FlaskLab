@@ -107,10 +107,11 @@ def launch_anova():
         cols = []
         for i in ANOVA_COLS:
             if i in request.args:
-                cols.append('i')
-        data = database.get(conn, ANOVA_COLS)
-        anova_result = analyzer.anova(data, 'Income', cols)
-        return render_template("anova.html", result=anova_result.split('\n'))
+                cols.append(i)
+        cols.append('Income')
+        data = database.get(conn, cols)
+        anova_result = analyzer.anova_cols(data, cols)
+        return render_template("anova_result.html", result=anova_result.split('\n'))
 
 
 def post_insert_data():

@@ -6,7 +6,7 @@ import rpy2.robjects.numpy2ri as numpy2ri
 from rpy2.robjects.packages import importr
 from scipy.stats import chi2_contingency
 from scipy.stats.contingency import expected_freq
-from statsmodels.api import OLS
+from statsmodels.formula.api import ols
 from statsmodels.tools.tools import add_constant
 
 
@@ -109,7 +109,7 @@ def anova(data, cols):
         stat, pval = test(y)
         res += f'Statistic = {stat:.4f}, P-value = {pval:.4f}\n'
         if pval < .05:
-            res += '!P-value < 0.05 -> cut 100 first\n'
+            res += '!P-value < 0.05 -> cut 100 random\n'
             data = data.sample(100)
             X = X[X.index.isin(data.index)]
             y = y[y.index.isin(data.index)]
@@ -130,4 +130,51 @@ def anova(data, cols):
             res += f'!P-value < 0.05 -> Income depends on {column}\n\n'
         else:
             res += f'!P-value >= 0.05 -> Income doesn\'t depend on {column}\n\n'
+    return res
+
+
+def anova_cols(data, collist):
+    res = ''
+    data = pd.DataFrame(data, columns=collist)
+    X = data.loc[:, data.columns != 'Income']
+    y = data['Income']
+    # Normality tests
+    if len(y) > 500:
+        test = st.jarque_bera
+        res += 'Big dataset -> Jarque-Bera test\n'
+    else:
+        test = st.shapiro
+        res += 'Big dataset -> Shapiro-Wilk\'s test\n'
+
+    stat, pval = test(y)
+    res += f'Statistic = {stat:.4f}, P-value = {pval:.4f}\n\n'
+
+    if pval < .05:
+        res += '!P-value < 0.05 -> log transformation and test again\n'
+        y = np.log(y + 1)
+        stat, pval = test(y)
+        res += f'Statistic = {stat:.4f}, P-value = {pval:.4f}\n'
+        if pval < .05:
+            res += '!P-value < 0.05 -> cut 100 random\n'
+            data = data.sample(100)
+            X = X[X.index.isin(data.index)]
+            y = y[y.index.isin(data.index)]
+        else:
+            res += '!P-value > 0.05 -> ok, normal distribution\n'
+    else:
+        res += '!P-value > 0.05 -> ok, normal distribution\n'
+
+    formula = 'Income ~ '
+    formula += ' * '.join([f'C({col})' for col in X.columns])
+    model = ols(formula, data).fit()
+    res += str(model.summary2().tables[2]) + '\n\n'
+    # print(model.summary2().tables[2])
+    g = data.groupby(list(X.columns))['Income']
+    res += f'ANOVA test:\n'
+    stat, pval = st.f_oneway(*[data for name, data in g])
+    res += f'Statistic = {stat:.4f}, P-value = {pval:.4f}\n'
+    if pval < .05:
+        res += f'!P-value < 0.05 -> Income depends on {list(X.columns)}\n\n'
+    else:
+        res += f'!P-value >= 0.05 -> Income doesn\'t depend on {list(X.columns)}\n\n'
     return res
