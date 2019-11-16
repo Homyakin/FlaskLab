@@ -104,21 +104,21 @@ def anova(data, cols):
     res += f'Statistic = {stat:.4f}, P-value = {pval:.4f}\n\n'
 
     if pval < .05:
-        res += 'P-value < 0.05 -> log transformation and test again\n'
+        res += '!P-value < 0.05 -> log transformation and test again\n'
         y = np.log(y + 1)
         stat, pval = test(y)
         res += f'Statistic = {stat:.4f}, P-value = {pval:.4f}\n'
         if pval < .05:
-            res += 'P-value < 0.05 -> cut 100 first\n'
+            res += '!P-value < 0.05 -> cut 100 first\n'
             data = data.sample(100)
             X = X[X.index.isin(data.index)]
             y = y[y.index.isin(data.index)]
         else:
-            res += 'P-value > 0.05 -> ok\n'
+            res += '!P-value > 0.05 -> ok, normal distribution\n'
     else:
-        res += 'P-value > 0.05 -> ok\n'
+        res += '!P-value > 0.05 -> ok, normal distribution\n'
     for column in X.columns:
-        res += f'Column: {column}\nLinear model:\n'
+        res += f'?Column: {column}\nLinear model:\n'
         exog = pd.get_dummies(X[column], drop_first=True)
         model = OLS(y, add_constant(exog)).fit()
         res += str(model.summary2())
@@ -127,7 +127,7 @@ def anova(data, cols):
         stat, pval = st.f_oneway(*[data for name, data in g])
         res += f'Statistic = {stat:.4f}, P-value = {pval:.4f}\n'
         if pval < .05:
-            res += f'P-value < 0.05 -> Income depends on {column}\n\n'
+            res += f'!P-value < 0.05 -> Income depends on {column}\n\n'
         else:
-            res += f'P-value >= 0.05 -> Income doesn\'t depend on {column}\n\n'
+            res += f'!P-value >= 0.05 -> Income doesn\'t depend on {column}\n\n'
     return res
