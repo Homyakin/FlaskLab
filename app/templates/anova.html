@@ -2,21 +2,16 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>ANOVA test</title>
+    <title>Добавление данных</title>
 </head>
 <body>
-    {% for para in result %}
-        {% if para[0] == '!' %}
-            <p><b>{{ para[1:] }}</b></p>
-        {% elif para[0] == '?' %}
-            <br><h1>{{ para[1:] }}</h1>
-        {% else %}
-            <p>{{para}}</p>
-        {% endif %}
-        {% if para[-1] == '!' %}
-        <br><p><b>STARTING ANOVA</b></p><br>
-        {% endif %}
-    {% endfor %}
+    <form action="/anova_result" method="get">
+        {% for i in cols %}
+            <input type="checkbox" name='{{ i }}'> {{ i }} <br><br>
+        {% endfor %}
+        <input type="submit">
+    </form>
+    <h1>{{ message }}</h1>
     <button onclick="window.location.href = './';">
         Назад
     </button>

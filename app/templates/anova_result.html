@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>ANOVA test</title>
+</head>
+<body>
+    {% for para in result %}
+        {% if para[0] == '!' %}
+            <p><b>{{ para[1:] }}</b></p>
+        {% elif para[0] == '?' %}
+            <br><h1>{{ para[1:] }}</h1>
+        {% else %}
+            <p>{{para}}</p>
+        {% endif %}
+        {% if para[-1] == '!' %}
+        <br><p><b>STARTING ANOVA</b></p><br>
+        {% endif %}
+    {% endfor %}
+    <button onclick="window.location.href = './';">
+        Назад
+    </button>
+</body>
+</html>

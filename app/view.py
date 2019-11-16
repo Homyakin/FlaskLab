@@ -7,7 +7,7 @@ from database import database
 
 ANOVA_COLS = ['CityPopulation', 'EmploymentStatus',
               'Gender', 'HasDebt', 'JobPref', 'JobWherePref',
-              'MaritalStatus', 'SchoolDegree', 'Income']
+              'MaritalStatus', 'SchoolDegree']
 
 VALUES = {'EmploymentStatus': ['Employed for wages',
                                'Self-employed business owner',
@@ -97,10 +97,19 @@ def analyze():
 
 
 @app.route("/anova", methods=['GET'])
+def choose_anova():
+    return render_template("anova.html", cols=ANOVA_COLS)
+
+
+@app.route("/anova_result", methods=['GET'])
 def launch_anova():
     with database.create_connection() as conn:
+        cols = []
+        for i in ANOVA_COLS:
+            if i in request.args:
+                cols.append('i')
         data = database.get(conn, ANOVA_COLS)
-        anova_result = analyzer.anova(data, ANOVA_COLS)
+        anova_result = analyzer.anova(data, 'Income', cols)
         return render_template("anova.html", result=anova_result.split('\n'))
 
 
