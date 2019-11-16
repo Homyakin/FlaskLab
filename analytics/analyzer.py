@@ -134,6 +134,8 @@ def anova(data, cols):
 
 
 def anova_cols(data, collist):
+    if len(collist) == 1:
+        return 'None'
     res = ''
     data = pd.DataFrame(data, columns=collist)
     X = data.loc[:, data.columns != 'Income']
@@ -174,7 +176,9 @@ def anova_cols(data, collist):
     stat, pval = st.f_oneway(*[data for name, data in g])
     res += f'Statistic = {stat:.4f}, P-value = {pval:.4f}\n'
     if pval < .05:
-        res += f'!P-value < 0.05 -> Income depends on {list(X.columns)}\n\n'
+        res += f"!P-value < 0.05 -> Income depends on {', '.join(X.columns)}\n\n"
     else:
-        res += f'!P-value >= 0.05 -> Income doesn\'t depend on {list(X.columns)}\n\n'
+        res += f"!P-value >= 0.05 -> Income doesn\'t depend on {', '.join(X.columns)}\n\n"
+        res += '?Again\n\n'
+        res += anova_cols(data.drop(columns=collist[0]), collist[1:])
     return res
