@@ -7,7 +7,6 @@ from rpy2.robjects.packages import importr
 from scipy.stats import chi2_contingency
 from scipy.stats.contingency import expected_freq
 from statsmodels.formula.api import ols
-from statsmodels.tools.tools import add_constant
 
 
 def get_expected_values(crosstab):
@@ -83,54 +82,6 @@ def get_statistic_and_expected_table(crosstab):
             return pearsons_chi2(crosstab, True)
         else:
             return exact_fisher(crosstab, length, False), expected_df
-
-
-def anova(data, cols):
-    res = ''
-    data = pd.DataFrame(data, columns=cols)
-    data = data[data['Gender'].isin(['male', 'female'])]
-    data.dropna(inplace=True)
-    X = data.loc[:, data.columns != 'Income']
-    y = data['Income']
-    # Normality tests
-    if len(y) > 500:
-        test = st.jarque_bera
-        res += 'Big dataset -> Jarque-Bera test\n'
-    else:
-        test = st.shapiro
-        res += 'Big dataset -> Shapiro-Wilk\'s test\n'
-
-    stat, pval = test(y)
-    res += f'Statistic = {stat:.4f}, P-value = {pval:.4f}\n\n'
-
-    if pval < .05:
-        res += '!P-value < 0.05 -> log transformation and test again\n'
-        y = np.log(y + 1)
-        stat, pval = test(y)
-        res += f'Statistic = {stat:.4f}, P-value = {pval:.4f}\n'
-        if pval < .05:
-            res += '!P-value < 0.05 -> cut 100 random\n'
-            data = data.sample(100)
-            X = X[X.index.isin(data.index)]
-            y = y[y.index.isin(data.index)]
-        else:
-            res += '!P-value > 0.05 -> ok, normal distribution\n'
-    else:
-        res += '!P-value > 0.05 -> ok, normal distribution\n'
-    for column in X.columns:
-        res += f'?Column: {column}\nLinear model:\n'
-        exog = pd.get_dummies(X[column], drop_first=True)
-        model = OLS(y, add_constant(exog)).fit()
-        res += str(model.summary2())
-        g = data.groupby(column)['Income']
-        res += f'ANOVA test:\n'
-        stat, pval = st.f_oneway(*[data for name, data in g])
-        res += f'Statistic = {stat:.4f}, P-value = {pval:.4f}\n'
-        if pval < .05:
-            res += f'!P-value < 0.05 -> Income depends on {column}\n\n'
-        else:
-            res += f'!P-value >= 0.05 -> Income doesn\'t depend on {column}\n\n'
-    return res
 
 
 def anova_cols(data, collist):
