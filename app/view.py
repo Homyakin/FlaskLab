@@ -9,6 +9,11 @@ ANOVA_COLS = ['CityPopulation', 'EmploymentStatus',
               'Gender', 'HasDebt', 'JobPref', 'JobWherePref',
               'MaritalStatus', 'SchoolDegree']
 
+ELLIPSE_COLS = ['FixedAcidity', 'VolatileAcidity', 'CitricAcid',
+                'ResidualSugar', 'Chlorides', 'FreeSulfurDioxide',
+                'TotalSulfurDioxide', 'Density', 'PH',
+                'Sulphates', 'Alcohol']
+
 VALUES = {'EmploymentStatus': ['Employed for wages',
                                'Self-employed business owner',
                                'Self-employed freelancer'],
@@ -158,3 +163,27 @@ def insert_data():
         return render_template("insert.html", selected=VALUES)
     else:
         return post_insert_data()
+
+
+@app.route("/update")
+def update_data():
+    return analyzer.update_data()
+
+
+@app.route("/ellipse", methods=['GET'])
+def choose_ellipse():
+    return render_template("ellipse.html", cols=ELLIPSE_COLS)
+
+
+@app.route("/ellipse_result", methods=['GET'])
+def launch_drow_ellipse():
+    x, y = request.args
+    analyzer.draw_ellipse(x, y)
+    return render_template("ellipse_result.html")
+
+
+@app.route("/pca")
+def launch_pca():
+    u, n_comp = analyzer.define_equation()
+    equations = analyzer.print_latex(u)
+    return render_template("pca.html", equations=equations, n_comp=n_comp)

@@ -7,6 +7,15 @@ from rpy2.robjects.packages import importr
 from scipy.stats import chi2_contingency
 from scipy.stats.contingency import expected_freq
 from statsmodels.formula.api import ols
+import matplotlib.pyplot as plt
+from matplotlib.patches import Ellipse
+import matplotlib.transforms as transforms
+from .processing import FileProcessor
+from sklearn.decomposition import PCA
+
+
+URL = r'https://sci2s.ugr.es/keel/dataset/data/classification/winequality-red.zip'
+path_to_file = './app/data/winequality-red.dat'
 
 
 def get_expected_values(crosstab):
@@ -33,7 +42,7 @@ def pearsons_chi2(crosstab, correction=False):
     :return: tuple -- (chi2 statistic, p-value, table of expected values)
     """
     chi2_stat, pval, _, expected = chi2_contingency(crosstab,
-                                                     correction=correction)
+                                                    correction=correction)
 
     result = f'''
     Used method: Pearson's chi2;\n
@@ -85,6 +94,17 @@ def get_statistic_and_expected_table(crosstab):
 
 
 def anova_cols(data, collist):
+    """
+    Conducts ANOVA procedure
+
+    :param data: data to analyze
+    :type data: list 
+    :param collist: columns to include in analysis
+    :type collist: list
+
+    :return: string with result
+    """
+
     if len(collist) == 1:
         return 'None'
     res = ''
@@ -133,3 +153,157 @@ def anova_cols(data, collist):
         res += '?Again\n\n'
         res += anova_cols(data.drop(columns=collist[0]), collist[1:])
     return res
+
+
+def update_data():
+    """
+    Updates local data from URL
+
+    :return: status (Ok/not ok)
+    :rtype: str
+    """
+
+    processor = FileProcessor()
+    processor.download_file(URL)
+    status = processor.unzip_file()
+    return status
+
+
+def draw_ellipse(x_col, y_col):
+    """
+    Draws confident ellips within two columns
+    
+    :param x_col: first column
+    :type x_col: str
+    :param y_col: second column
+    :type y_col: str
+
+    :return: None
+    """
+
+    processor = FileProcessor()
+    df = processor.parse_file(path_to_file)
+    fig, ax = plt.subplots()
+    confidence_ellipse(df[x_col], df[y_col], ax, edgecolor='green')
+    ax.scatter(df[x_col], df[y_col], marker='.')
+    ax.set_xlabel(x_col)
+    ax.set_ylabel(y_col)
+    ax.set_title(f'Confident ellipse of {x_col} and {y_col}')
+    fname = './app/static/ellipse.svg'
+    fig.savefig(fname=fname, dpi=300, format='svg')
+
+
+def confidence_ellipse(x, y, ax, p_value=0.05, facecolor='none', **kwargs):
+    """
+    Create a plot of the covariance confidence ellipse of *x* and *y*.
+
+    Parameters
+    ----------
+    x, y : array-like, shape (n, )
+        Input data.
+
+    ax : matplotlib.axes.Axes
+        The axes object to draw the ellipse into.
+
+    n_std : float
+        The number of standard deviations to determine the ellipse's radiuses.
+
+    Returns
+    -------
+    matplotlib.patches.Ellipse
+
+    Other parameters
+    ----------------
+    kwargs : `~matplotlib.patches.Patch` properties
+    """
+
+    if x.size != y.size:
+        raise ValueError("x and y must be the same size")
+
+    cov = np.cov(x, y)
+    pearson = cov[0, 1]/np.sqrt(cov[0, 0] * cov[1, 1])
+    # Using a special case to obtain the eigenvalues of this
+    # two-dimensionl dataset.
+    ell_radius_x = np.sqrt(1 + pearson)
+    ell_radius_y = np.sqrt(1 - pearson)
+    ellipse = Ellipse((0, 0),
+                      width=ell_radius_x * 2,
+                      height=ell_radius_y * 2,
+                      facecolor=facecolor,
+                      **kwargs)
+
+    if 0 < p_value < 1:
+        n_std = np.sqrt(-2 * np.log(p_value))
+    else:
+        print("P-value must be between 0 and 1")
+    # Calculating the stdandard deviation of x from
+    # the squareroot of the variance and multiplying
+    # with the given number of standard deviations.
+    scale_x = np.sqrt(cov[0, 0]) * n_std
+    mean_x = np.mean(x)
+
+    # calculating the stdandard deviation of y ...
+    scale_y = np.sqrt(cov[1, 1]) * n_std
+    mean_y = np.mean(y)
+
+    transf = transforms.Affine2D() \
+        .rotate_deg(45) \
+        .scale(scale_x, scale_y) \
+        .translate(mean_x, mean_y)
+
+    ellipse.set_transform(transf + ax.transData)
+    return ax.add_patch(ellipse)
+
+
+def define_equation(min_variance_explained=.95):
+    """
+    Function that calculates transition matrix U
+
+    :param X: input dataset
+    :type X: numpy.ndarray or pandas.DataFrame
+    :param min_variance_explained: minimum sum of variance that should
+                                   be explained bu principal components
+    :type min_variance_explained: float
+
+    :return: components of U and number of components
+    :rtype: tuple
+    """
+
+    processor = FileProcessor()
+    df = processor.parse_file(path_to_file)
+    X = df.drop(columns=['Quality'])
+    X = (X - X.mean()) / X.std()
+    for n_comp in range(1, min(X.shape) + 1):
+        pca = PCA(n_components=n_comp, random_state=11)
+        pca.fit_transform(X)
+        if sum(pca.explained_variance_ratio_) >= min_variance_explained:
+            return pca.components_, pca.n_components_
+
+
+def print_latex(u):
+    """
+    Function that creates latex-based strings with equations
+    of principal components from transition matrix U
+
+    :param u: transtion matrix
+    :type u: numpy.ndarray with shape (2x2)
+
+    :return: latex-based strings with equations
+    :rtype: list
+    """
+
+    equations = []
+
+    for j, row in enumerate(u, start=1):
+        equation = ''
+        equation += r'z_{%d} = ' % (j, )
+        for i, val in enumerate(row, start=1):
+            if i == 1 and val >= 0:
+                equation += '%.4f x_{%d}' % (val, i)
+                continue
+            else:
+                equation += '%+.4f x_{%d}' % (val, i)
+                continue
+            equation += '%+.4f x_{%d}' % (val, i)
+        equations.append(equation)
+    return equations

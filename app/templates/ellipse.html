@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Выбор полей</title>
+</head>
+<body>
+    <form action="/ellipse_result" method="get">
+        <table>
+                <tr>
+                    <td>
+                        <h3> Переменная 1 </h3>
+                        {% for i in cols %}
+                            <input type="radio" name='{{ i }}'> {{ i }} <br><br>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <h3> Переменная 2 </h3>
+                        {% for i in cols %}
+                            <input type="radio" name='{{ i }}'> {{ i }} <br><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+        </table>
+            
+        <input type="submit">
+    </form>
+    <h1>{{ message }}</h1>
+    <button onclick="window.location.href = './';">
+        Назад
+    </button>
+</body>
+</html>

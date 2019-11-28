@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>PCA</title>
+</head>
+<body>
+    <h2> Уравнения для главных компонент </h2>
+    <h4> Выбрано {{ n_comp }} главных компонент </h4>
+    {% for eq in equations %}
+    <img src="http://latex.codecogs.com/gif.latex?{{ eq }}" border="0"/>
+    <br/>
+    {% endfor %}
+    <button onclick="window.location.href = './';">
+        Назад
+    </button>
+</body>
+</html>
