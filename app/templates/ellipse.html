@@ -6,18 +6,22 @@
 </head>
 <body>
     <form action="/ellipse_result" method="get">
+        <input type="radio" name="a">
+        <input type="submit">
+    </form>
+    <form action="/ellipse_result" method="get">
         <table>
                 <tr>
                     <td>
                         <h3> Переменная 1 </h3>
                         {% for i in cols %}
-                            <input type="radio" name='{{ i }}'> {{ i }} <br><br>
+                            <input type="radio" name="first" value="{{ i }}"> {{ i }} <br><br>
                         {% endfor %}
                     </td>
                     <td>
                         <h3> Переменная 2 </h3>
                         {% for i in cols %}
-                            <input type="radio" name='{{ i }}'> {{ i }} <br><br>
+                            <input type="radio" name="second" value="{{ i }}"> {{ i }} <br><br>
                         {% endfor %}
                     </td>
                 </tr>

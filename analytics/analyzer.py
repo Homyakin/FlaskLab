@@ -7,15 +7,23 @@ from rpy2.robjects.packages import importr
 from scipy.stats import chi2_contingency
 from scipy.stats.contingency import expected_freq
 from statsmodels.formula.api import ols
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 import matplotlib.transforms as transforms
 from .processing import FileProcessor
 from sklearn.decomposition import PCA
-
+import random
+import string
 
 URL = r'https://sci2s.ugr.es/keel/dataset/data/classification/winequality-red.zip'
 path_to_file = './app/data/winequality-red.dat'
+
+
+def randomword(length):
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(length))
 
 
 def get_expected_values(crosstab):
@@ -189,8 +197,9 @@ def draw_ellipse(x_col, y_col):
     ax.set_xlabel(x_col)
     ax.set_ylabel(y_col)
     ax.set_title(f'Confident ellipse of {x_col} and {y_col}')
-    fname = './app/static/ellipse.svg'
+    fname = f'./app/static/ellipse{randomword(10)}.svg'
     fig.savefig(fname=fname, dpi=300, format='svg')
+    return fname
 
 
 def confidence_ellipse(x, y, ax, p_value=0.05, facecolor='none', **kwargs):
@@ -304,6 +313,5 @@ def print_latex(u):
             else:
                 equation += '%+.4f x_{%d}' % (val, i)
                 continue
-            equation += '%+.4f x_{%d}' % (val, i)
         equations.append(equation)
     return equations

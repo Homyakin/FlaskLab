@@ -3,7 +3,7 @@ from flask import render_template
 from flask import request, escape
 from analytics import analyzer
 from database import database
-
+import os
 
 ANOVA_COLS = ['CityPopulation', 'EmploymentStatus',
               'Gender', 'HasDebt', 'JobPref', 'JobWherePref',
@@ -77,13 +77,27 @@ VALUES = {'EmploymentStatus': ['Employed for wages',
 
           }
 
+old_files = []
+
+
+def clear_old_files(fn):
+    def wrapper(*args, **kwargs):
+        for i in old_files:
+            os.remove(i)
+        old_files.clear()
+        return fn(*args, **kwargs)
+    wrapper.__name__ = fn.__name__
+    return wrapper
+
 
 @app.route("/", methods=['GET'])
+@clear_old_files
 def main():
     return render_template("index.html")
 
 
 @app.route("/analyze", methods=['GET'])
+@clear_old_files
 def analyze():
     field1 = escape(request.args.get('field1'))
     field2 = escape(request.args.get('field2'))
@@ -102,11 +116,13 @@ def analyze():
 
 
 @app.route("/anova", methods=['GET'])
+@clear_old_files
 def choose_anova():
     return render_template("anova.html", cols=ANOVA_COLS)
 
 
 @app.route("/anova_result", methods=['GET'])
+@clear_old_files
 def launch_anova():
     with database.create_connection() as conn:
         cols = []
@@ -158,6 +174,7 @@ def post_insert_data():
 
 
 @app.route("/insert", methods=['POST', 'GET'])
+@clear_old_files
 def insert_data():
     if request.method == 'GET':
         return render_template("insert.html", selected=VALUES)
@@ -166,23 +183,29 @@ def insert_data():
 
 
 @app.route("/update")
+@clear_old_files
 def update_data():
     return analyzer.update_data()
 
 
 @app.route("/ellipse", methods=['GET'])
+@clear_old_files
 def choose_ellipse():
     return render_template("ellipse.html", cols=ELLIPSE_COLS)
 
 
 @app.route("/ellipse_result", methods=['GET'])
+@clear_old_files
 def launch_drow_ellipse():
-    x, y = request.args
-    analyzer.draw_ellipse(x, y)
-    return render_template("ellipse_result.html")
+    x = request.args.get('first')
+    y = request.args.get('second')
+    fname = analyzer.draw_ellipse(x, y)
+    old_files.append(fname)
+    return render_template("ellipse_result.html", fname=fname)
 
 
 @app.route("/pca")
+@clear_old_files
 def launch_pca():
     u, n_comp = analyzer.define_equation()
     equations = analyzer.print_latex(u)
