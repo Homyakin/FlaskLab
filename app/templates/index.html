@@ -6,46 +6,48 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <br/>
-    <br/>
-    <h2> Лабораторная работа 3 </h2>
-    <button onclick="window.location.href = './insert';">
-        Добавление новых наблюдений
-    </button>
-    <button onclick="window.location.href = './analyze?field1=Gender&field2=SchoolDegree';">
-        Gender, SchoolDegree
-    </button>
-    <button onclick="window.location.href = './analyze?field1=Gender&field2=JobWherePref';">
-        Gender, JobWherePref
-    </button>
-    <button onclick="window.location.href = './analyze?field1=JobWherePref&field2=LanguageAtHome';">
-        JobWherePref, LanguageAtHome
-    </button>
-    <button onclick="window.location.href = './analyze?field1=EmploymentField&field2=LanguageAtHome';">
-        EmploymentField, LanguageAtHome
-    </button>
-    <button onclick="window.location.href = './analyze?field1=EmploymentStatus&field2=LanguageAtHome';">
-        EmploymentStatus, LanguageAtHome
-    </button>
-    <br/>
-    <br/>
-    <h2> Лабораторная работа 4 </h2>
-    <button onclick="window.location.href = './anova';">
-        ANOVA
-    </button>
-    <br/>
-    <br/>
-    <h2> Лабораторная работа 5 </h2>
-    <button onclick="window.location.href = './update';">
-        Update 5 lab
-    </button>
-    <button onclick="window.location.href = './ellipse';">
-        Confident ellipse
-    </button>
-    <button onclick="window.location.href = './pca';">
-        Метод главных компонент
-    </button>
-    <br/>
-    <br/>
+    <div class="main">
+        <br/>
+        <br/>
+        <h2> Лабораторная работа 3 </h2>
+        <button onclick="window.location.href = './insert';">
+            Добавление новых наблюдений
+        </button>
+        <button onclick="window.location.href = './analyze?field1=Gender&field2=SchoolDegree';">
+            Gender, SchoolDegree
+        </button>
+        <button onclick="window.location.href = './analyze?field1=Gender&field2=JobWherePref';">
+            Gender, JobWherePref
+        </button>
+        <button onclick="window.location.href = './analyze?field1=JobWherePref&field2=LanguageAtHome';">
+            JobWherePref, LanguageAtHome
+        </button>
+        <button onclick="window.location.href = './analyze?field1=EmploymentField&field2=LanguageAtHome';">
+            EmploymentField, LanguageAtHome
+        </button>
+        <button onclick="window.location.href = './analyze?field1=EmploymentStatus&field2=LanguageAtHome';">
+            EmploymentStatus, LanguageAtHome
+        </button>
+        <br/>
+        <br/>
+        <h2> Лабораторная работа 4 </h2>
+        <button onclick="window.location.href = './anova';">
+            ANOVA
+        </button>
+        <br/>
+        <br/>
+        <h2> Лабораторная работа 5 </h2>
+        <button onclick="window.location.href = './update';">
+            Update 5 lab
+        </button>
+        <button onclick="window.location.href = './ellipse';">
+            Confident ellipse
+        </button>
+        <button onclick="window.location.href = './pca';">
+            Метод главных компонент
+        </button>
+        <br/>
+        <br/>
+    </div>
 </body>
 </html>
