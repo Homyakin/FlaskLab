@@ -192,7 +192,7 @@ def draw_ellipse(x_col, y_col):
     processor = FileProcessor()
     df = processor.parse_file(path_to_file)
     fig, ax = plt.subplots()
-    confidence_ellipse(df[x_col], df[y_col], ax, edgecolor='green')
+    confidence_ellipse(df[x_col], df[y_col], ax, edgecolor='red')
     ax.scatter(df[x_col], df[y_col], marker='.')
     ax.set_xlabel(x_col)
     ax.set_ylabel(y_col)
@@ -289,6 +289,8 @@ def define_equation(min_variance_explained=.95):
             return pca.components_, pca.n_components_
 
 
+
+
 def print_latex(u):
     """
     Function that creates latex-based strings with equations
@@ -312,6 +314,18 @@ def print_latex(u):
                 continue
             else:
                 equation += '%+.4f x_{%d}' % (val, i)
+                continue
+        equations.append(equation)
+
+    for j, row in enumerate(u.T, start=1):
+        equation = ''
+        equation += r'x_{%d} = ' % (j,)
+        for i, val in enumerate(row, start=1):
+            if i == 1 and val >= 0:
+                equation += '%.4f z_{%d}' % (val, i)
+                continue
+            else:
+                equation += '%+.4f z_{%d}' % (val, i)
                 continue
         equations.append(equation)
     return equations

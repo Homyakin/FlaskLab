@@ -199,6 +199,8 @@ def choose_ellipse():
 def launch_drow_ellipse():
     x = request.args.get('first')
     y = request.args.get('second')
+    if x is None or y is None or x not in ELLIPSE_COLS or y not in ELLIPSE_COLS:
+        return render_template("ellipse.html", cols=ELLIPSE_COLS)
     fname = analyzer.draw_ellipse(x, y)
     old_files.append(fname)
     return render_template("ellipse_result.html", fname=fname)
